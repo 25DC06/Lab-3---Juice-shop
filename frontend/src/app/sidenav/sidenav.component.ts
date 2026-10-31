@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2014-2021 Bjoern Kimminich.
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
 import { environment } from '../../environments/environment'
 import { ChallengeService } from '../Services/challenge.service'
-import { Component, EventEmitter, NgZone, OnInit, Output } from '@angular/core'
+import { Component, EventEmitter, NgZone, type OnInit, Output } from '@angular/core'
 import { SocketIoService } from '../Services/socket-io.service'
 import { AdministrationService } from '../Services/administration.service'
 import { Router } from '@angular/router'
 import { UserService } from '../Services/user.service'
-import { CookieService } from 'ngx-cookie-service'
+import { CookieService } from 'ngx-cookie'
 import { ConfigurationService } from '../Services/configuration.service'
 import { LoginGuard } from '../app.guard'
 import { roles } from '../roles'
@@ -30,7 +30,6 @@ export class SidenavComponent implements OnInit {
   public showOrdersSubmenu: boolean = false
   public isShowing = false
   public offerScoreBoardTutorial: boolean = false
-
   @Output() public sidenavToggle = new EventEmitter()
 
   constructor (private readonly administrationService: AdministrationService, private readonly challengeService: ChallengeService,
@@ -43,7 +42,7 @@ export class SidenavComponent implements OnInit {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         this.version = `v${version}`
       }
-    }, (err) => console.log(err))
+    }, (err) => { console.log(err) })
     this.getApplicationDetails()
     this.getScoreBoardStatus()
 
@@ -74,9 +73,9 @@ export class SidenavComponent implements OnInit {
   }
 
   logout () {
-    this.userService.saveLastLoginIp().subscribe((user: any) => { this.noop() }, (err) => console.log(err))
+    this.userService.saveLastLoginIp().subscribe((user: any) => { this.noop() }, (err) => { console.log(err) })
     localStorage.removeItem('token')
-    this.cookieService.delete('token', '/')
+    this.cookieService.remove('token')
     sessionStorage.removeItem('bid')
     sessionStorage.removeItem('itemTotal')
     this.userService.isLoggedIn.next(false)
@@ -87,6 +86,10 @@ export class SidenavComponent implements OnInit {
     window.location.replace(environment.hostServer + '/profile')
   }
 
+  goToDataErasurePage () {
+    window.location.replace(environment.hostServer + '/dataerasure')
+  }
+
   // eslint-disable-next-line no-empty,@typescript-eslint/no-empty-function
   noop () { }
 
@@ -95,13 +98,13 @@ export class SidenavComponent implements OnInit {
       this.ngZone.run(() => {
         this.scoreBoardVisible = challenges[0].solved
       })
-    }, (err) => console.log(err))
+    }, (err) => { console.log(err) })
   }
 
   getUserDetails () {
     this.userService.whoAmI().subscribe((user: any) => {
       this.userEmail = user.email
-    }, (err) => console.log(err))
+    }, (err) => { console.log(err) })
   }
 
   onToggleSidenav = () => {
@@ -119,7 +122,7 @@ export class SidenavComponent implements OnInit {
       if (config?.application.welcomeBanner.showOnFirstStart && config.hackingInstructor.isEnabled) {
         this.offerScoreBoardTutorial = config.application.welcomeBanner.showOnFirstStart && config.hackingInstructor.isEnabled
       }
-    }, (err) => console.log(err))
+    }, (err) => { console.log(err) })
   }
 
   isAccounting () {

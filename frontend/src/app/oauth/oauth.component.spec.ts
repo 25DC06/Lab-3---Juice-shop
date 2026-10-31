@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2014-2021 Bjoern Kimminich.
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
-import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing'
+import { type ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing'
 import { TranslateModule } from '@ngx-translate/core'
 import { MatIconModule } from '@angular/material/icon'
 import { MatCheckboxModule } from '@angular/material/checkbox'
@@ -21,6 +21,7 @@ import { ActivatedRoute } from '@angular/router'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { of, throwError } from 'rxjs'
 import { UserService } from '../Services/user.service'
+import { CookieModule } from 'ngx-cookie'
 
 describe('OAuthComponent', () => {
   let component: OAuthComponent
@@ -43,6 +44,7 @@ describe('OAuthComponent', () => {
         ]
         ),
         ReactiveFormsModule,
+        CookieModule.forRoot(),
         TranslateModule.forRoot(),
         MatInputModule,
         MatIconModule,

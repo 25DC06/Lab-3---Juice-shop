@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2021 Bjoern Kimminich.
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
@@ -7,12 +7,12 @@ import { ClipboardModule } from 'ngx-clipboard'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
 import { CountryMappingService } from '../Services/country-mapping.service'
-import { CookieService } from 'ngx-cookie-service'
+import { CookieModule, CookieService } from 'ngx-cookie'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { ChallengeService } from '../Services/challenge.service'
 import { ConfigurationService } from '../Services/configuration.service'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing'
+import { type ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing'
 import { SocketIoService } from '../Services/socket-io.service'
 
 import { ChallengeSolvedNotificationComponent } from './challenge-solved-notification.component'
@@ -21,8 +21,12 @@ import { EventEmitter } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 
 class MockSocket {
-  on (str: string, callback: Function) {
+  on (str: string, callback: any) {
     callback()
+  }
+
+  emit (a: any, b: any) {
+    return null
   }
 }
 
@@ -45,7 +49,7 @@ describe('ChallengeSolvedNotificationComponent', () => {
     translateService.onLangChange = new EventEmitter()
     translateService.onTranslationChange = new EventEmitter()
     translateService.onDefaultLangChange = new EventEmitter()
-    cookieService = jasmine.createSpyObj('CookieService', ['set'])
+    cookieService = jasmine.createSpyObj('CookieService', ['put'])
     challengeService = jasmine.createSpyObj('ChallengeService', ['continueCode'])
     configurationService = jasmine.createSpyObj('ConfigurationService', ['getApplicationConfiguration'])
     configurationService.getApplicationConfiguration.and.returnValue(of({}))
@@ -54,6 +58,7 @@ describe('ChallengeSolvedNotificationComponent', () => {
       imports: [
         HttpClientTestingModule,
         TranslateModule.forRoot(),
+        CookieModule.forRoot(),
         ClipboardModule,
         MatCardModule,
         MatButtonModule,
@@ -119,7 +124,7 @@ describe('ChallengeSolvedNotificationComponent', () => {
     component.saveProgress()
     expires.setFullYear(expires.getFullYear() + 1)
 
-    expect(cookieService.set).toHaveBeenCalledWith('continueCode', '12345', expires, '/')
+    expect(cookieService.put).toHaveBeenCalledWith('continueCode', '12345', { expires })
   })
 
   it('should throw error when not supplied with a valid continue code', () => {

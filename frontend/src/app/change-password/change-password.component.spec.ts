@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2014-2021 Bjoern Kimminich.
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
 import { TranslateModule } from '@ngx-translate/core'
 import { UserService } from '../Services/user.service'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
-import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing'
+import { type ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing'
 import { ChangePasswordComponent } from './change-password.component'
 import { ReactiveFormsModule } from '@angular/forms'
 
@@ -60,12 +60,14 @@ describe('ChangePasswordComponent', () => {
     expect(component.passwordControl.valid).toBe(true)
   })
 
-  it('length of new password must be 5-20 characters', () => {
+  it('length of new password must be 5-40 characters', () => {
     component.newPasswordControl.setValue('old')
     expect(component.newPasswordControl.valid).toBeFalsy()
     component.newPasswordControl.setValue('new password')
     expect(component.newPasswordControl.valid).toBe(true)
     component.newPasswordControl.setValue('new password new password')
+    expect(component.newPasswordControl.valid).toBe(true)
+    component.newPasswordControl.setValue('new password new password new password new password')
     expect(component.newPasswordControl.valid).toBeFalsy()
   })
 

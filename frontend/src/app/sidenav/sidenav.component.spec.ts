@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2014-2021 Bjoern Kimminich.
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
 import { ChallengeService } from '../Services/challenge.service'
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing'
+import { type ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing'
 import { SocketIoService } from '../Services/socket-io.service'
 import { ConfigurationService } from '../Services/configuration.service'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { RouterTestingModule } from '@angular/router/testing'
 import { of } from 'rxjs'
 import { HttpClientModule } from '@angular/common/http'
-import { CookieService } from 'ngx-cookie-service'
+import { CookieModule, CookieService } from 'ngx-cookie'
 import { LoginGuard } from '../app.guard'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { SidenavComponent } from './sidenav.component'
@@ -26,7 +26,7 @@ import { UserService } from '../Services/user.service'
 import { Location } from '@angular/common'
 
 class MockSocket {
-  on (str: string, callback: Function) {
+  on (str: string, callback: any) {
     callback(str)
   }
 }
@@ -57,7 +57,7 @@ describe('SidenavComponent', () => {
     userService.isLoggedIn.next.and.returnValue({})
     administractionService = jasmine.createSpyObj('AdministrationService', ['getApplicationVersion'])
     administractionService.getApplicationVersion.and.returnValue(of(null))
-    cookieService = jasmine.createSpyObj('CookieService', ['delete', 'get', 'set'])
+    cookieService = jasmine.createSpyObj('CookieService', ['remove', 'get', 'put'])
     mockSocket = new MockSocket()
     socketIoService = jasmine.createSpyObj('SocketIoService', ['socket'])
     socketIoService.socket.and.returnValue(mockSocket)
@@ -75,6 +75,7 @@ describe('SidenavComponent', () => {
         MatButtonModule,
         MatMenuModule,
         MatListModule,
+        CookieModule.forRoot(),
         RouterTestingModule
       ],
       providers: [
@@ -144,7 +145,7 @@ describe('SidenavComponent', () => {
 
   it('should remove authentication token from cookies', () => {
     component.logout()
-    expect(cookieService.delete).toHaveBeenCalledWith('token', '/')
+    expect(cookieService.remove).toHaveBeenCalledWith('token')
   })
 
   it('should remove basket id from session storage', () => {
